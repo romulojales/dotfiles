@@ -1,7 +1,14 @@
+;;; init.el ---  My init file
+;;; Commentary:
+;;; My Emacs vanila init file
+
+;;; Code:
 (global-set-key [remap list-buffers] 'ibuffer)
 (setq inhibit-startup-message t)
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
+(fido-mode)
+(desktop-save-mode 1)
 
 (setq mac-command-modifier      'meta
       mac-option-modifier       'alt
@@ -31,8 +38,6 @@
 
 (straight-use-package 'use-package)
 
-
-
 (use-package treesit-auto
   :straight (treesit-auto :type git :host github :repo "renzmann/treesit-auto")
   :custom
@@ -45,4 +50,28 @@
   :straight (teesit-fold :type git :host github :repo "emacs-tree-sitter/treesit-fold")
   :init (global-treesit-fold-mode)
   (global-treesit-fold-indicators-mode)
-)
+  )
+
+(use-package emacs
+  :ensure nil
+  :init
+  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 100))
+
+(use-package eglot
+  :hook (prog-mode . eglot-ensure)
+  :init (setq eglot-stay-out-of '(flymake))
+  :bind (:map eglot-mode-map
+           ("C-c a" . eglot-code-actions)
+           ("C-c o" . eglot-code-actions-organize-imports)
+           ("C-c r" . eglot-rename)
+           ("C-c f" . eglot-format)
+	   ("C-c d" . eldoc)))
+
+(use-package eldoc
+  :init
+  (global-eldoc-mode))
+
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+;;; init.el ends here
