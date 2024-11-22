@@ -55,7 +55,7 @@
 (use-package emacs
   :ensure nil
   :init
-  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 100))
+  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 115))
 
 (use-package eglot
   :hook (prog-mode . eglot-ensure)
@@ -71,7 +71,18 @@
   :init
   (global-eldoc-mode))
 
+(use-package exec-path-from-shell
+  :ensure t
+  :straight (exec-path-from-shell)
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  )
+  
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :straight (flycheck)
+  :config (global-flycheck-mode)
+  )
+
 ;;; init.el ends here
