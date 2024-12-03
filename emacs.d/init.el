@@ -58,7 +58,8 @@
   (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 115))
 
 (use-package eglot
-  :hook (prog-mode . eglot-ensure)
+  :hook ((prog-mode . eglot-ensure)
+	 (yaml-ts-mode . eglot-ensure))
   :init (setq eglot-stay-out-of '(flymake))
   :bind (:map eglot-mode-map
            ("C-c a" . eglot-code-actions)
@@ -82,7 +83,31 @@
 (use-package flycheck
   :ensure t
   :straight (flycheck)
-  :config (global-flycheck-mode)
+  :init (global-flycheck-mode)
   )
+
+(use-package company
+  :ensure t
+  :straight (company)
+  :hook (prog-mode . company-mode))
+
+(use-package yasnippet
+  :ensure t
+  :straight (yasnippet)
+  :config (yas-global-mode t)
+  )
+
+(use-package flycheck-eglot
+  :ensure t
+  :straight (flycheck-eglot :type git :host github :repo "flycheck/flycheck-eglot")
+  :after (flycheck eglot)
+  :config
+   (global-flycheck-eglot-mode 1)
+   )
+
+(use-package envrc
+  :ensure t
+  :straight (envrc)
+  :hook (after-init . envrc-global-mode))
 
 ;;; init.el ends here
