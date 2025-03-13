@@ -79,7 +79,12 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
   )
-  
+
+(use-package envrc
+  :ensure t
+  :straight (envrc)
+  :hook (after-init . envrc-global-mode))
+
 (use-package flycheck
   :ensure t
   :straight (flycheck)
@@ -105,9 +110,10 @@
    (global-flycheck-eglot-mode 1)
    )
 
-(use-package envrc
+(use-package neotree
   :ensure t
-  :straight (envrc)
-  :hook (after-init . envrc-global-mode))
+  :straight (neotree)
+  :config (global-set-key [f8] 'neotree-toggle)
+)
 
 ;;; init.el ends here
