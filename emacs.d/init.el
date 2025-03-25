@@ -114,6 +114,10 @@
   :ensure t
   :straight (neotree)
   :config (global-set-key [f8] 'neotree-toggle)
-)
+  )
 
+(use-package magit
+  :ensure t
+  :straight (magit)
+ )
 ;;; init.el ends here
