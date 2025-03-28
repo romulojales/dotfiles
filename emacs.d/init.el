@@ -110,14 +110,27 @@
    (global-flycheck-eglot-mode 1)
    )
 
-(use-package neotree
-  :ensure t
-  :straight (neotree)
-  :config (global-set-key [f8] 'neotree-toggle)
-  )
-
 (use-package magit
   :ensure t
   :straight (magit)
- )
+  )
+
+(use-package all-the-icons
+  :ensure t
+  :straight (all-the-icons)
+  :if (display-graphic-p))
+
+(use-package treemacs
+  :ensure t
+  :straight (treemacs)
+  :hook ((treemacs-mode . treemacs-project-follow-mode)
+         (emacs-startup . treemacs))
+  :bind ("<f5>" . treemacs)
+  :custom
+  (treemacs-hide-dot-git-directory nil)
+  (treemacs-is-never-other-window t)
+  (treemacs-project-follow-into-home t))
+
+
+
 ;;; init.el ends here
