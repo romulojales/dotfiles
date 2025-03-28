@@ -260,6 +260,17 @@
   (treemacs-is-never-other-window t)
   (treemacs-project-follow-into-home t))
 
+(use-package treemacs-all-the-icons
+  :ensure t
+  :straight (treemacs-all-the-icons)
+  :config
+  (treemacs-load-theme "all-the-icons")
+  )
+
+(use-package treemacs-magit
+  :straight (treemacs-magit)
+  :after (treemacs magit)
+  :ensure t)
 
 (use-package all-the-icons-ibuffer
   :ensure t
@@ -302,7 +313,7 @@
 	     :straight (vertico)
 	     :init
 	     (vertico-mode)
-)
+	     )
 
 (use-package vertico-posframe
   :ensure t
