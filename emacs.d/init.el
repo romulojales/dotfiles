@@ -10,9 +10,13 @@
 (fido-mode)
 (desktop-save-mode 1)
 
-(setq mac-command-modifier      'meta
-      mac-option-modifier       'alt
-      mac-right-option-modifier nil)
+(when (eq system-type 'darwin)
+   (setq mac-command-modifier      'meta
+	 mac-option-modifier       'alt
+	 mac-right-option-modifier nil)
+   (setq-default dired-use-ls-dired nil)
+   )
+
 
 (setq tab-always-indent 'complete)
 (setq completion-styles '(flex basic partial-completion require))
