@@ -184,6 +184,143 @@
    '((left-fringe . 8)
      (right-fringe . 8))))
 
+
+(use-package eglot
+  :hook ((prog-mode . eglot-ensure)
+	 (yaml-ts-mode . eglot-ensure))
+  :init (setq eglot-stay-out-of '(flymake))
+  :bind (:map eglot-mode-map
+           ("C-c a" . eglot-code-actions)
+           ("C-c o" . eglot-code-actions-organize-imports)
+           ("C-c r" . eglot-rename)
+           ("C-c f" . eglot-format)
+	   ("C-c d" . eldoc)))
+
+(use-package eldoc
+  :init
+  (global-eldoc-mode))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :straight (exec-path-from-shell)
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  )
+
+(use-package envrc
+  :ensure t
+  :straight (envrc)
+  :hook (after-init . envrc-global-mode))
+
+(use-package flycheck
+  :ensure t
+  :straight (flycheck)
+  :init (global-flycheck-mode)
+  )
+
+(use-package company
+  :ensure t
+  :straight (company)
+  :hook (prog-mode . company-mode))
+
+(use-package yasnippet
+  :ensure t
+  :straight (yasnippet)
+  :config (yas-global-mode t)
+  )
+
+(use-package flycheck-eglot
+  :ensure t
+  :straight (flycheck-eglot :type git :host github :repo "flycheck/flycheck-eglot")
+  :after (flycheck eglot)
+  :config
+   (global-flycheck-eglot-mode 1)
+   )
+
+(use-package magit
+  :ensure t
+  :straight (magit)
+  )
+
+(use-package all-the-icons
+  :ensure t
+  :straight (all-the-icons)
+  :if (display-graphic-p))
+
+(use-package treemacs
+  :ensure t
+  :defer t
+  :straight (treemacs)
+  :hook ((treemacs-mode . treemacs-project-follow-mode)
+         (emacs-startup . treemacs))
+  :bind ("<f5>" . treemacs)
+  :custom
+  (treemacs-hide-dot-git-directory nil)
+  (treemacs-is-never-other-window t)
+  (treemacs-project-follow-into-home t))
+
+
+(use-package all-the-icons-ibuffer
+  :ensure t
+  :straight (all-the-icons-ibuffer)
+  :defer
+  :custom
+  (all-the-icons-ibuffer-formats
+   `((mark modified read-only locked vc-status-mini
+           ;; Here you may adjust by replacing :right with :center or :left
+           ;; According to taste, if you want the icon further from the name
+           " " ,(if all-the-icons-ibuffer-icon
+                    '(icon 2 2 :left :elide)
+                  "")
+           ,(if all-the-icons-ibuffer-icon
+                (propertize " " 'display `(space :align-to 8))
+              "")
+           (name 18 18 :left :elide)
+           " " (size-h 9 -1 :right)
+           " " (mode+ 16 16 :left :elide)
+           " " (vc-status 16 16 :left)
+           " " vc-relative-file)
+     (mark " " (name 16 -1) " " filename)))
+
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+
+;; https://github.com/purcell/ibuffer-vc/blob/master/ibuffer-vc.el
+(use-package ibuffer-vc
+  :ensure t
+  :straight (ibuffer-vc)
+  :hook (ibuffer . (lambda ()
+                     (ibuffer-vc-set-filter-groups-by-vc-root)
+                     (unless (eq ibuffer-sorting-mode 'alphabetic)
+                       (ibuffer-do-sort-by-vc-status)
+                       ;; (ibuffer-do-sort-by-alphabetic)
+                       )
+                     )))
+
+(use-package vertico
+	     :ensure t
+	     :straight (vertico)
+	     :init
+	     (vertico-mode)
+)
+
+(use-package vertico-posframe
+  :ensure t
+  :straight (vertico-posframe)
+  :config (vertico-posframe-mode 1)
+  :custom
+  (vertico-posframe-parameters
+   '((left-fringe . 8)
+     (right-fringe . 8))))
+
+(use-package git-gutter
+  :ensure t
+  :straight (git-gutter)
+  :hook (after-init . global-git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02)
+  )
+
 (use-package emacs
   :ensure nil
   :init
