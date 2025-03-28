@@ -56,11 +56,6 @@
   (global-treesit-fold-indicators-mode)
   )
 
-(use-package emacs
-  :ensure nil
-  :init
-  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 115))
-
 (use-package eglot
   :hook ((prog-mode . eglot-ensure)
 	 (yaml-ts-mode . eglot-ensure))
@@ -126,6 +121,7 @@
 
 (use-package treemacs
   :ensure t
+  :defer t
   :straight (treemacs)
   :hook ((treemacs-mode . treemacs-project-follow-mode)
          (emacs-startup . treemacs))
@@ -136,5 +132,71 @@
   (treemacs-project-follow-into-home t))
 
 
+(use-package all-the-icons-ibuffer
+  :ensure t
+  :straight (all-the-icons-ibuffer)
+  :defer
+  :custom
+  (all-the-icons-ibuffer-formats
+   `((mark modified read-only locked vc-status-mini
+           ;; Here you may adjust by replacing :right with :center or :left
+           ;; According to taste, if you want the icon further from the name
+           " " ,(if all-the-icons-ibuffer-icon
+                    '(icon 2 2 :left :elide)
+                  "")
+           ,(if all-the-icons-ibuffer-icon
+                (propertize " " 'display `(space :align-to 8))
+              "")
+           (name 18 18 :left :elide)
+           " " (size-h 9 -1 :right)
+           " " (mode+ 16 16 :left :elide)
+           " " (vc-status 16 16 :left)
+           " " vc-relative-file)
+     (mark " " (name 16 -1) " " filename)))
+
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+
+;; https://github.com/purcell/ibuffer-vc/blob/master/ibuffer-vc.el
+(use-package ibuffer-vc
+  :ensure t
+  :straight (ibuffer-vc)
+  :hook (ibuffer . (lambda ()
+                     (ibuffer-vc-set-filter-groups-by-vc-root)
+                     (unless (eq ibuffer-sorting-mode 'alphabetic)
+                       (ibuffer-do-sort-by-vc-status)
+                       ;; (ibuffer-do-sort-by-alphabetic)
+                       )
+                     )))
+
+(use-package vertico
+	     :ensure t
+	     :straight (vertico)
+	     :init
+	     (vertico-mode)
+)
+
+(use-package vertico-posframe
+  :ensure t
+  :straight (vertico-posframe)
+  :config (vertico-posframe-mode 1)
+  :custom
+  (vertico-posframe-parameters
+   '((left-fringe . 8)
+     (right-fringe . 8))))
+
+(use-package emacs
+  :ensure nil
+  :init
+  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 115)
+  :custom
+  ;; Support opening new minibuffers from inside existing minibuffers.
+  (enable-recursive-minibuffers t)
+  ;; Hide commands in M-x which do not work in the current mode.  Vertico
+  ;; commands are hidden in normal buffers. This setting is useful beyond
+  ;; Vertico.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Do not allow the cursor in the minibuffer prompt
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt)))
 
 ;;; init.el ends here
