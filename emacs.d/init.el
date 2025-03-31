@@ -225,6 +225,11 @@
   :config
   (load-theme 'modus-operandi t))
 
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode))
+
 (use-package emacs
   :ensure nil
   :init
