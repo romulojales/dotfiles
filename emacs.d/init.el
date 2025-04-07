@@ -23,17 +23,19 @@
 ;; saves the current state of emacs
 (desktop-save-mode 1)
 
+(setopt use-short-answers t)
+
 ;; controlling some attributes based on operating system.
 (when (eq system-type 'darwin)
   ;; Mapping mac keyboard keys.
    (setq mac-command-modifier      'meta
 	 mac-option-modifier       'alt
+	 mac-right-command-modifier 'super
 	 mac-right-option-modifier nil)
    
    ;; ls in macos does not have --dired option
    (setq-default dired-use-ls-dired nil)
    )
-
 
 (setq tab-always-indent 'complete)
 (setq completion-styles '(flex basic partial-completion require))
