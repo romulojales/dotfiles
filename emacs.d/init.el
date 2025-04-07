@@ -242,8 +242,6 @@
 
 (use-package emacs
   :ensure nil
-  :init
-  (set-face-attribute 'default nil :font "JetBrainsMono Nerd Font" :height 115)
   :custom
   ;; Support opening new minibuffers from inside existing minibuffers.
   (enable-recursive-minibuffers t)
