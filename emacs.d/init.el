@@ -76,7 +76,7 @@
 
 ;;; 
 (use-package treesit-fold
-  :straight (teesit-fold :type git :host github :repo "emacs-tree-sitter/treesit-fold")
+  :straight (treesit-fold :type git :host github :repo "emacs-tree-sitter/treesit-fold")
   :init (global-treesit-fold-mode)
   (global-treesit-fold-indicators-mode)
   )
@@ -222,7 +222,13 @@
   (setq git-gutter:update-interval 0.2)
   )
 
+(use-package solaire-mode
+  :ensure t
+  :straight t
+  )
+(solaire-global-mode +1)
 (use-package modus-themes
+  :ensure t
   :straight t
   :config
   (load-theme 'modus-operandi t))
@@ -238,10 +244,22 @@
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
   :bind (:map markdown-mode-map
-         ("C-c C-e" . markdown-do)))
+              ("C-c C-e" . markdown-do)))
+
+(use-package nerd-icons
+  :ensure t
+  :straight t)
+(use-package doom-modeline
+  :ensure t
+  :straight t
+  :init (doom-modeline-mode 1))
+
+(global-hl-line-mode)
 
 (use-package emacs
   :ensure nil
+  :init
+  (setq-default line-spacing 0.4)
   :custom
   ;; Support opening new minibuffers from inside existing minibuffers.
   (enable-recursive-minibuffers t)
