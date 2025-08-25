@@ -1,90 +1,131 @@
-;;; init.el ---  My init file
+;;; init.el --- Rômulo Jales's init.el file -*- lexical-binding: t -*-
 ;;; Commentary:
-;;; My Emacs vanila init file
+;;; My Emacs' init file.
+;;; Two main guidelines:
+;;; 1 - Keep things documented and with references
+;;; 2 - Use the most of Emacs offers out of the box.
 
 ;;; Code:
 
-;; General configurations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; A home for the customizations
+;; https://www.gnu.org/software/emacs/manual/html_mono/emacs.html#Saving-Customizations
+(setq custom-file "~/.emacs.d/emacs-custom.el")
+;; Loading all runtime customizations
+(load custom-file 'noerror) ; noerror for when it is the very first
+			    ; time running this init.el emacs
 
-;; When listing buffers, use ibuffer.
-(global-set-key [remap list-buffers] 'ibuffer)
 
-;; Not display the startup message. go direct to coding
+;; Where to save the backups
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Backup.html
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+
+;; Look'n'feel
+
+;; not showing the startup page. Also disables splash-screen
 (setq inhibit-startup-message t)
-;; Not display the tool bar
+
+;; How autocomplete should work
+(setq completion-styles '(flex basic partial-completion ))
+
+;; Disables the scroll bars, both horizontal and vertical. It saves
+;; some screen space
+(scroll-bar-mode -1)
+
+;; no need for top tool bar.q
 (tool-bar-mode -1)
 
-;; Not display the scroll bar
-(toggle-scroll-bar -1)
+;; Make the screen maximized not full-screen
+(toggle-frame-maximized)
 
-;; How auto-complete should work.
-(fido-mode)
+;; Display line numbers in all buffers
+(global-display-line-numbers-mode)
+
+;; Highlitght the current line
+(global-hl-line-mode)
 
 ;; saves the current state of emacs
 (desktop-save-mode 1)
 
+;; use y or n instead of yes or no.
 (setopt use-short-answers t)
 
-;; controlling some attributes based on operating system.
-(when (eq system-type 'darwin)
-  ;; Mapping mac keyboard keys.
-   (setq mac-command-modifier      'meta
-	 mac-option-modifier       'alt
-	 mac-right-command-modifier 'super
-	 mac-right-option-modifier nil)
-   
-   ;; ls in macos does not have --dired option
-   (setq-default dired-use-ls-dired nil)
-   )
+;; some space between the lines
+(setq line-spacing 0.4)
 
-(setq tab-always-indent 'complete)
-(setq completion-styles '(flex basic partial-completion require))
+;; Disabling this key because ctrl-z in emacs puts the emacs in background
+(global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x C-z"))
 
-(global-display-line-numbers-mode)
-
-;; configuring straight
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-(straight-use-package 'use-package)
-
-;; Eldoc is a documentation minibuffer.
-(use-package eldoc
-  :init
-  (global-eldoc-mode))
-
-(use-package treesit-auto
-  :straight (treesit-auto :type git :host github :repo "renzmann/treesit-auto")
-  :custom
-  (treesit-auto-install 'prompt)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Theme
+(use-package modus-themes
+  :ensure t
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (load-theme 'modus-operandi t))
 
-;;; 
-(use-package treesit-fold
-  :straight (treesit-fold :type git :host github :repo "emacs-tree-sitter/treesit-fold")
-  :init (global-treesit-fold-mode)
-  (global-treesit-fold-indicators-mode)
+; Custom configurations for MacOS
+(when (eq system-type 'darwin)
+  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Mac-_002f-GNUstep-Customization.html#Modifier-keys
+  ;;  disabling right option as META modifier this will allow us to
+  ;;  use accent and write other characteres.
+  (setq ns-right-alternate-modifier 'none
+	ns-right-command-modifier 'super
+	ns-alternate-modifier 'alt
+	ns-command-modifier 'meta))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Vertico - a completion for the minibuffer system which presents the options in
+;; vertical
+;; Https://github.com/minad/vertico
+(use-package vertico
+  :ensure t
+  :hook
+  (vertico-mode)
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Markdown
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+              ("C-c C-e" . markdown-do)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; GIT
+;; Magit - https://magit.vc
+;; Install and configure magit
+
+;; magit dependencies
+(use-package compat
+  :ensure t)
+
+(use-package llama
+  :ensure t)
+
+(use-package cond-let
+  :ensure t
+  :vc (:url "https://github.com/tarsius/cond-let" :rev "v0.1.0"))
+
+(use-package transient
+  :ensure t)
+
+(use-package with-editor
+  :ensure t)
+
+;; Magit
+(use-package magit
+  :ensure t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Eglot
 
 (use-package eglot
   :hook ((prog-mode . eglot-ensure)
 	 (yaml-ts-mode . eglot-ensure))
-  :init (setq eglot-stay-out-of '(flymake))
   :bind (:map eglot-mode-map
            ("C-c a" . eglot-code-actions)
            ("C-c o" . eglot-code-actions-organize-imports)
@@ -92,183 +133,31 @@
            ("C-c f" . eglot-format)
 	   ("C-c d" . eldoc)))
 
-(use-package exec-path-from-shell
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Flymake
+(use-package flymake
   :ensure t
-  :straight (exec-path-from-shell)
+)
+
+;; An autocomplete system
+(use-package corfu
+  :ensure t
+  :config (global-corfu-mode))
+
+(use-package orderless
+  :ensure t
   :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  )
-
-(use-package envrc
-  :ensure t
-  :straight (envrc)
-  :hook (after-init . envrc-global-mode))
-
-(use-package flycheck
-  :ensure t
-  :straight (flycheck)
-  :init (global-flycheck-mode)
-  )
-
-(use-package company
-  :ensure t
-  :straight (company)
-  :hook (prog-mode . company-mode))
-
-(use-package yasnippet
-  :ensure t
-  :straight (yasnippet)
-  :config (yas-global-mode t)
-  )
-
-(use-package flycheck-eglot
-  :ensure t
-  :straight (flycheck-eglot :type git :host github :repo "flycheck/flycheck-eglot")
-  :after (flycheck eglot)
-  :config
-   (global-flycheck-eglot-mode 1)
-   )
-
-(use-package magit
-  :ensure t
-  :straight (magit)
-  )
-
-(use-package all-the-icons
-  :ensure t
-  :straight (all-the-icons)
-  :if (display-graphic-p))
-
-(use-package treemacs
-  :ensure t
-  :defer t
-  :straight (treemacs)
-  :hook ((treemacs-mode . treemacs-project-follow-mode)
-         (emacs-startup . treemacs))
-  :bind ("<f5>" . treemacs)
-  :custom
-  (treemacs-hide-dot-git-directory nil)
-  (treemacs-is-never-other-window t)
-  (treemacs-project-follow-into-home t))
-
-(use-package treemacs-all-the-icons
-  :ensure t
-  :straight (treemacs-all-the-icons)
-  :config
-  (treemacs-load-theme "all-the-icons")
-  )
-
-(use-package treemacs-magit
-  :straight (treemacs-magit)
-  :after (treemacs magit)
-  :ensure t)
-
-(use-package all-the-icons-ibuffer
-  :ensure t
-  :straight (all-the-icons-ibuffer)
-  :defer
-  :custom
-  (all-the-icons-ibuffer-formats
-   `((mark modified read-only locked vc-status-mini
-           ;; Here you may adjust by replacing :right with :center or :left
-           ;; According to taste, if you want the icon further from the name
-           " " ,(if all-the-icons-ibuffer-icon
-                    '(icon 2 2 :left :elide)
-                  "")
-           ,(if all-the-icons-ibuffer-icon
-                (propertize " " 'display `(space :align-to 8))
-              "")
-           (name 18 18 :left :elide)
-           " " (size-h 9 -1 :right)
-           " " (mode+ 16 16 :left :elide)
-           " " (vc-status 16 16 :left)
-           " " vc-relative-file)
-     (mark " " (name 16 -1) " " filename)))
-
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
-
-(use-package ibuffer-vc
-  :ensure t
-  :straight (ibuffer-vc)
-  :hook (ibuffer . (lambda ()
-                     (ibuffer-vc-set-filter-groups-by-vc-root)
-                     (unless (eq ibuffer-sorting-mode 'alphabetic)
-                       (ibuffer-do-sort-by-vc-status)
-                       )
-                     )))
-
-(use-package vertico
-	     :ensure t
-	     :straight (vertico)
-	     :init
-	     (vertico-mode)
-	     )
-
-(use-package vertico-posframe
-  :ensure t
-  :straight (vertico-posframe)
-  :config (vertico-posframe-mode 1)
-  :custom
-  (vertico-posframe-parameters
-   '((left-fringe . 8)
-     (right-fringe . 8))))
-
-(use-package git-gutter
-  :ensure t
-  :straight (git-gutter)
-  :hook (after-init . global-git-gutter-mode)
-  :config
-  (setq git-gutter:update-interval 0.2)
-  )
-
-(use-package solaire-mode
-  :ensure t
-  :straight t
-  )
-(solaire-global-mode +1)
-(use-package modus-themes
-  :ensure t
-  :straight t
-  :config
-  (load-theme 'modus-operandi t))
+  (setq orderless-smart-case nil)
+  (setq completion-styles '(orderless basic))
+  (setq completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package marginalia
-  :straight t
-  :init
-  (marginalia-mode))
-
-(use-package markdown-mode
   :ensure t
-  :straight t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown")
-  :bind (:map markdown-mode-map
-              ("C-c C-e" . markdown-do)))
+  :hook (marginalia-mode))
 
-(use-package nerd-icons
-  :ensure t
-  :straight t)
-(use-package doom-modeline
-  :ensure t
-  :straight t
-  :init (doom-modeline-mode 1))
-
-(global-hl-line-mode)
-
-(use-package emacs
-  :ensure nil
-  :init
-  (setq-default line-spacing 0.4)
-  :custom
-  ;; Support opening new minibuffers from inside existing minibuffers.
-  (enable-recursive-minibuffers t)
-  ;; Hide commands in M-x which do not work in the current mode.  Vertico
-  ;; commands are hidden in normal buffers. This setting is useful beyond
-  ;; Vertico.
-  (read-extended-command-predicate #'command-completion-default-include-p)
-  ;; Do not allow the cursor in the minibuffer prompt
-  (minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Docker
+(use-package dockerfile-mode
+  :ensure t)
 
 ;;; init.el ends here
