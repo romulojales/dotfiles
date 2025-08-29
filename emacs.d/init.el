@@ -208,4 +208,11 @@
   :ensure t
   :hook (after-init))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Init.el ends here
+;; Spell check
+(use-package flyspell
+  :ensure t
+  :config (flyspell-mode))
+
+;;; init.el ends here
