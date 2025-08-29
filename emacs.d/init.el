@@ -51,7 +51,7 @@
 (setopt use-short-answers t)
 
 ;; some space between the lines
-(setq line-spacing 0.4)
+(setopt line-spacing 0.4)
 
 ;; Disabling this key because ctrl-z in emacs puts the emacs in background
 (global-unset-key (kbd "C-z"))
@@ -122,18 +122,26 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Eglot
-
 (use-package eglot
   :hook ((prog-mode . eglot-ensure)
 	 (yaml-ts-mode . eglot-ensure))
   :bind (:map eglot-mode-map
            ("C-c a" . eglot-code-actions)
-           ("C-c o" . eglot-code-actions-organize-imports)
+           ("C-c o" . eglot-code-action-organize-imports)
            ("C-c r" . eglot-rename)
            ("C-c f" . eglot-format)
 	   ("C-c d" . eldoc)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Treesit
+;; map files to <lang>-ts-mode
+(add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
+;; treesit-fold - a package to fold and unfold  *-ts-mode buffers
+;; https://github.com/emacs-tree-sitter/treesit-fold
+(use-package treesit-fold
+  :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Linter
 ;; Flymake
 (use-package flymake
   :ensure t
@@ -144,6 +152,7 @@
   :ensure t
   :config (global-corfu-mode))
 
+;; When suggesting, don't care about the order of the workd
 (use-package orderless
   :ensure t
   :config
@@ -151,13 +160,52 @@
   (setq completion-styles '(orderless basic))
   (setq completion-category-overrides '((file (styles basic partial-completion)))))
 
+;; when on the minibuffer, Adds information about the command that one is typing
 (use-package marginalia
   :ensure t
-  :hook (marginalia-mode))
+  :init (marginalia-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Terraform
+
+;; Hcl is a mode for edding terraform configuring files
+(use-package hcl-mode
+  :ensure t
+  :vc (:url "https://github.com/hcl-emacs/hcl-mode"
+	    :rev "b2a03a446c1fe324ff494c28b9321486fa6fc672"))
+
+;; the terraform mode
+(use-package terraform-mode
+  :ensure t
+  :vc (:url "https://github.com/hcl-emacs/terraform-mode" :rev "v1.1.0"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Docker
+;; Schema highligt 
 (use-package dockerfile-mode
   :ensure t)
 
-;;; init.el ends here
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Envrc - A package to configure per project enviroments
+;; "https://github.com/purcell/envrc
+
+;; dependency
+(use-package inheritenv
+  :ensure t
+  :vc (:url "https://github.com/purcell/inheritenv" :rev "0.2"))
+
+;; the package
+(use-package envrc
+  :ensure t
+  :vc (:url "https://github.com/purcell/envrc" :rev "0.12")
+  :hook (after-init . envrc-global-mode)
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Editorconfig - coding styles
+;; https://editorconfig.org/ 
+(use-package editorconfig
+  :ensure t
+  :hook (after-init))
+
+;;; Init.el ends here
