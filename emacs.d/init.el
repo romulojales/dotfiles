@@ -126,11 +126,11 @@
   :hook ((prog-mode . eglot-ensure)
 	 (yaml-ts-mode . eglot-ensure))
   :bind (:map eglot-mode-map
-           ("C-c a" . eglot-code-actions)
-           ("C-c o" . eglot-code-action-organize-imports)
-           ("C-c r" . eglot-rename)
-           ("C-c f" . eglot-format)
-	   ("C-c d" . eldoc)))
+              ("C-c a" . eglot-code-actions)
+              ("C-c o" . eglot-code-action-organize-imports)
+              ("C-c r" . eglot-rename)
+              ("C-c f" . eglot-format)
+	      ("C-c d" . eldoc)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Treesit
 ;; map files to <lang>-ts-mode
