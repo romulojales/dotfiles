@@ -11,10 +11,10 @@
 ;; A home for the customizations
 ;; https://www.gnu.org/software/emacs/manual/html_mono/emacs.html#Saving-Customizations
 (setq custom-file "~/.emacs.d/emacs-custom.el")
+
 ;; Loading all runtime customizations
 (load custom-file 'noerror) ; noerror for when it is the very first
 			    ; time running this init.el emacs
-
 
 ;; Where to save the backups
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Backup.html
@@ -95,6 +95,19 @@
               ("C-c C-e" . markdown-do)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; VC
+
+;; Diff helper
+;; diff-hl
+;; display the uncommitted changes on the fringe
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+  (diff-hl-margin-mode)
+  (diff-hl-flydiff-mode)
+  )
+
 ;; GIT
 ;; Magit - https://magit.vc
 ;; Install and configure magit
@@ -117,8 +130,9 @@
   :ensure t)
 
 ;; Magit
-(use-package magit
-  :ensure t)
+(use-package magic
+  :ensure t
+  :hook (magit-post-refresh . diff-hl-magit-post-refresh))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Eglot
@@ -135,6 +149,7 @@
 ;; Treesit
 ;; map files to <lang>-ts-mode
 (add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
+
 ;; treesit-fold - a package to fold and unfold  *-ts-mode buffers
 ;; https://github.com/emacs-tree-sitter/treesit-fold
 (use-package treesit-fold
@@ -145,12 +160,18 @@
 ;; Flymake
 (use-package flymake
   :ensure t
-)
+  )
 
 ;; An autocomplete system
 (use-package corfu
   :ensure t
-  :config (global-corfu-mode))
+
+  :config (global-corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-echo-mode t)
+  (corfu-echo-delay 0.2)
+  )
 
 ;; When suggesting, don't care about the order of the workd
 (use-package orderless
